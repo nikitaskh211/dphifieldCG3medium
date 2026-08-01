@@ -1,0 +1,25 @@
+@ECHO OFF
+
+ECHO Compiling "dphifield3CG.f90"
+IF NOT EXIST .\problems\P1\modules MKDIR .\problems\P1\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\P1\dphifield3CG.f90 -J.\problems\P1\modules -o .\problems\P1\dphifield.exe
+
+ECHO Compiling "plssantenna.f90"
+IF NOT EXIST .\problems\P2\modules MKDIR .\problems\P2\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\P2\plssantenna.f90 -J.\problems\P2\modules -o .\problems\P2\plssantenna.exe
+
+ECHO Compiling "tl.f90"
+IF NOT EXIST .\problems\TL\modules MKDIR .\problems\TL\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\TL\tl.f90 -J.\problems\TL\modules -o .\problems\TL\tl.exe
+
+ECHO Compiling "tlc.f90"
+IF NOT EXIST .\problems\TL\modules MKDIR .\problems\TL\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\TL\tlc.f90 -J.\problems\TL\modules -o .\problems\TL\tlc.exe
+
+ECHO Compiling "eigenvalues.f90"
+IF NOT EXIST .\problems\TE\modules MKDIR .\problems\TE\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\TE\eigenvalues.f90 -J.\problems\TE\modules -o .\problems\TE\eigenvalues.exe
+
+ECHO Compiling "powertest.f90"
+IF NOT EXIST .\problems\TP\modules MKDIR .\problems\TP\modules
+flang .\fd_pde_pde_0bc.f90 .\problems\TP\powertest.f90 -J.\problems\TP\modules -o .\problems\TP\powertest.exe
