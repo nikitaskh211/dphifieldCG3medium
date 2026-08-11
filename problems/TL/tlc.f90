@@ -225,7 +225,7 @@ PROGRAM test_lc_operator
          CALL multen(Lxc(1:3, :, :, :), zeta, Lxa(1:3, :, :, :))    ! Lxc(1:3)  = k0^2.Zeta.Lxa(1:3)
          CALL muldagten(Lxc(4:6, :, :, :), zeta, Lxc(1:3, :, :, :)) ! Lxc(4:6)  = dagger(Zeta).Zeta.Lxc(1:3)
          Lxa(1:3, :, :, :) = Lxa(1:3, :, :, :) + Lxc(4:6, :, :, :)  ! Lxa(1:3)  = k0^2.(1 + dagger(Zeta).Zeta).D0
-         Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
+        !Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
          Lxa(8:10, :, :, :) = -Lxc(1:3, :, :, :)               ! Lxa(8:10) = - k0^2.Zeta.D0
 
       CASE (2) ! Corresponds to Dy = D0
@@ -235,7 +235,7 @@ PROGRAM test_lc_operator
          CALL multen(Lxc(1:3, :, :, :), zeta, Lxa(1:3, :, :, :))    ! Lxc(1:3)  = k0^2.Zeta.Lxa(1:3)
          CALL muldagten(Lxc(4:6, :, :, :), zeta, Lxc(1:3, :, :, :)) ! Lxc(4:6)  = dagger(Zeta).Zeta.Lxc(1:3)
          Lxa(1:3, :, :, :) = Lxa(1:3, :, :, :) + Lxc(4:6, :, :, :)  ! Lxa(1:3)  = k0^2.(1 + dagger(Zeta).Zeta).D0
-         Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
+        !Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
          Lxa(8:10, :, :, :) = -Lxc(1:3, :, :, :)               ! Lxa(8:10) = - k0^2.Zeta.D0
 
       CASE (3) ! Corresponds to Dz = D0
@@ -245,7 +245,7 @@ PROGRAM test_lc_operator
          CALL multen(Lxc(1:3, :, :, :), zeta, Lxa(1:3, :, :, :))    ! Lxc(1:3)  = k0^2.Zeta.Lxa(1:3)
          CALL muldagten(Lxc(4:6, :, :, :), zeta, Lxc(1:3, :, :, :)) ! Lxc(4:6)  = dagger(Zeta).Zeta.Lxc(1:3)
          Lxa(1:3, :, :, :) = Lxa(1:3, :, :, :) + Lxc(4:6, :, :, :)  ! Lxa(1:3)  = k0^2.(1 + dagger(Zeta).Zeta).D0
-         Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
+        !Lxa(4, :, :, :) = -ik0*Lxc(7, :, :, :)                    ! Lxa(4)    = - i.k0.div(Zeta.D0)
          Lxa(8:10, :, :, :) = -Lxc(1:3, :, :, :)               ! Lxa(8:10) = - k0^2.Zeta.D0
 
          !====================!
