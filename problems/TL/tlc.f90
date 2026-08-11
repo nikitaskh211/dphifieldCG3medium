@@ -182,7 +182,7 @@ PROGRAM test_lc_operator
    ALLOCATE (Cx(10, nptx, npty, nptz))
    ALLOCATE (Lxc(10, nptx, npty, nptz))
    ALLOCATE (Lxa(10, nptx, npty, nptz))
-   ALLOCATE (tmp(10, nptx, npty, nptz))
+   ALLOCATE (tmp(3, nptx, npty, nptz))
 
    !===============!
    ! Zeta setting. !

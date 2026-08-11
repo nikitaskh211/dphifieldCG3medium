@@ -170,7 +170,7 @@ PROGRAM test_ll1_operator
    ALLOCATE(Cx(10, nptx, npty, nptz))
    ALLOCATE(Lxc(10, nptx, npty, nptz))
    ALLOCATE(Lxa(10, nptx, npty, nptz))
-   ALLOCATE(tmp(10, nptx, npty, nptz))
+   ALLOCATE(tmp(3, nptx, npty, nptz))
 
    ! Setting constants.
    ik0 = (0.0D0, 1.0D0)*pi/size0
