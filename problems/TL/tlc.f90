@@ -303,8 +303,10 @@ PROGRAM test_lc_operator
       ! Calculating operator action using finite differences. !
       !=======================================================!
       Lxc = (0.0D0, 0.0D0)
-      CALL mulmat(xa, Ux, tmp)
-      CALL muladd(zeta, xa, Cx, tmp)
+     !CALL mulmat(xa, Ux, tmp)
+     !CALL muladd(zeta, xa, Cx, tmp)
+      CALL mul_l_vacuum(Ux, tmp, xa)
+      CALL mul_l_correction(Cx, tmp, xa, zeta)
       Lxc = Ux + Cx
 
       !====================================================!
