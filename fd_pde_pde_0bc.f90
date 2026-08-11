@@ -1549,19 +1549,19 @@ SUBROUTINE mul_l_vacuum(res, tmp, arg)
    REAL(rk)    :: k02
 
    ! Assigning runtime variables.
-   ik0 = (0.0D0, 0.0D0)*pi/size0
+   ik0 = (0.0D0, 1.0D0)*pi/size0
    k02 = ABS(ik0)**2
 
    ! Initial assignment.
    res = (0.0D0, 0.0D0)
 
    ! Governing equation for D field.
-   CALL graddiv(tmp, arg(1:3, :, :, :))                                            ! tmp = ∇(∇•D)
-   res(1:3, :, :, :) = -tmp + 2.0D0*k02*arg(1:3, :, :, :) - k02*arg(8:10, :, :, :) ! res(1:3) = -∇(∇•D) + 2k₀²D - k₀²A
-   CALL roth(tmp, arg(5:7, :, :, :))                                               ! tmp = ∇×H
-   res(1:3, :, :, :) = res(1:3, :, :, :) - ik0*tmp                                 ! res(1:3) = -∇(∇•D) + 2k₀²D - k₀²A - ik₀∇×H
-   CALL nablaphi(tmp, arg(4, :, :, :))                                             ! tmp = ∇Φ
-   res(1:3, :, :, :) = res(1:3, :, :, :) - ik0*tmp                                 ! res(1:3) = -∇(∇•D) + 2k₀²D - k₀²A - ik₀∇×H - ik₀∇Φ
+   CALL graddiv(tmp, arg(1:3, :, :, :))                                            ! tmp = grad(div(D))
+   res(1:3, :, :, :) = -tmp + 2.0D0*k02*arg(1:3, :, :, :) - k02*arg(8:10, :, :, :) ! res(1:3) = -grad(div(D)) + 2k0^2*D - k0^2*A
+   CALL roth(tmp, arg(5:7, :, :, :))                                               ! tmp = curl(H)
+   res(1:3, :, :, :) = res(1:3, :, :, :) - ik0*tmp                                 ! res(1:3) = -grad(div(D)) + 2k0^2*D - k0^2*A - ik0*curl(H)
+   CALL nablaphi(tmp, arg(4, :, :, :))                                             ! tmp = grad(Phi)
+   res(1:3, :, :, :) = res(1:3, :, :, :) - ik0*tmp                                 ! res(1:3) = -grad(div(D)) + 2k0^2*D - k0^2*A - ik0*curl(H) - ik0*grad(Phi)
 
    ! Correction of mass terms near boundaries.
    res(1, 1, :, :)    = res(1, 1, :, :)    - k02*arg(1, 1, :, :)    + 0.5D0*k02*arg(8, 1, :, :)
@@ -1572,18 +1572,18 @@ SUBROUTINE mul_l_vacuum(res, tmp, arg)
    res(3, :, :, nptz) = res(3, :, :, nptz) - k02*arg(3, :, :, nptz) + 0.5D0*k02*arg(10, :, :, nptz)
 
    ! Governing equation for Phi field.
-   CALL laplas(tmp(1, :, :, :), arg(4, :, :, :))       ! tmp(1) = ∇²Φ
-   CALL divd(tmp(2, :, :, :), arg(8:10, :, :, :))      ! tmp(2) = ∇•A
-   CALL divd(tmp(2, :, :, :), arg(1:3, :, :, :))       ! tmp(3) = ∇•D
-   res(4, :, :, :) = -tmp(1) + ik0*tmp(2) - ik0*tmp(3) ! res(4) = -∇²Φ + ik₀∇•A - ik₀∇•D
+   CALL laplas(tmp(1, :, :, :), arg(4, :, :, :))                                  ! tmp(1) = laplacian(Phi)
+   CALL divd(tmp(2, :, :, :), arg(8:10, :, :, :))                                 ! tmp(2) = div(A)
+   CALL divd(tmp(3, :, :, :), arg(1:3, :, :, :))                                  ! tmp(3) = div(D)
+   res(4, :, :, :) = -tmp(1, :, :, :) + ik0*tmp(2, :, :, :) - ik0*tmp(3, :, :, :) ! res(4) = -laplacian(Phi) + ik0*div(A) - ik0*div(D)
 
    ! Governing equation for H field.
-   CALL laplash(tmp, arg(5:7, :, :, :))             ! tmp = ∇²H
-   res(5:7, :, :, :) = -tmp + k02*arg(5:7, :, :, :) ! res(5:7) = -∇²H + k₀²H
-   CALL rotd(tmp, arg(8:10, :, :, :))               ! tmp = ∇×A
-   res(5:7, :, :, :) = res(5:7, :, :, :) + ik0*tmp  ! res(5:7) = -∇²H + k₀²H + ik₀∇×A
-   CALL rotd(tmp, arg(1:3, :, :, :))                ! tmp = ∇×H
-   res(5:7, :, :, :) = res(5:7, :, :, :) + ik0*tmp  ! res(5:7) = -∇²H + k₀²H + ik₀∇×A + ik₀∇×D
+   CALL laplash(tmp, arg(5:7, :, :, :))             ! tmp = laplacian(H)
+   res(5:7, :, :, :) = -tmp + k02*arg(5:7, :, :, :) ! res(5:7) = -laplacian(H) + k0^2*H
+   CALL rotd(tmp, arg(8:10, :, :, :))               ! tmp = curl(A)
+   res(5:7, :, :, :) = res(5:7, :, :, :) + ik0*tmp  ! res(5:7) = -laplacian(H) + k0^2*H + ik0*curl(A)
+   CALL rotd(tmp, arg(1:3, :, :, :))                ! tmp = curl(D)
+   res(5:7, :, :, :) = res(5:7, :, :, :) + ik0*tmp  ! res(5:7) = -laplacian(H) + k0^2*H + ik0*curl(A) + ik0*curl(D)
 
    ! Correction of mass terms near boundaries.
    res(5, :, 1, :)    = res(5, :, 1, :)    - 0.5D0*k02*arg(5, :, 1, :)
@@ -1604,7 +1604,7 @@ SUBROUTINE mul_l_vacuum(res, tmp, arg)
    res(5, :, 1, nptz)    = res(5, :, 1, nptz)    + 0.25D0*k02*arg(5, :, 1, nptz)
    res(5, :, npty, nptz) = res(5, :, npty, nptz) + 0.25D0*k02*arg(5, :, npty, nptz)
    res(6, 1, :, 1)       = res(6, 1, :, 1)       + 0.25D0*k02*arg(6, 1, :, 1)
-   res(6, nptx, :, 1)    = res(6, nptx, :, :)    + 0.25D0*k02*arg(6, nptx, :, 1)
+   res(6, nptx, :, 1)    = res(6, nptx, :, 1)    + 0.25D0*k02*arg(6, nptx, :, 1)
    res(6, 1, :, nptz)    = res(6, 1, :, nptz)    + 0.25D0*k02*arg(6, 1, :, nptz)
    res(6, nptx, :, nptz) = res(6, nptx, :, nptz) + 0.25D0*k02*arg(6, nptx, :, nptz)
    res(7, 1, 1, :)       = res(7, 1, 1, :)       + 0.25D0*k02*arg(7, 1, 1, :)
@@ -1613,13 +1613,13 @@ SUBROUTINE mul_l_vacuum(res, tmp, arg)
    res(7, nptx, npty, :) = res(7, nptx, npty, :) + 0.25D0*k02*arg(7, nptx, npty, :)
 
    ! Governing equation for A field.
-   CALL laplasa(tmp, arg(8:10, :, :, :))                           ! tmp = ∇²A
-   res(8:10, :, :, :) = -tmp + k02*arg(8:10, :, :, :)              ! res(8:10) = -∇²A + k₀²A
-   CALL roth(tmp, arg(5:7, :, :, :))                               ! tmp = ∇×H
-   res(8:10, :, :, :) = res(8:10, :, :, :) - ik0*tmp               ! res(8:10) = -∇²A + k₀²A - ik₀∇×H
-   res(8:10, :, :, :) = res(8:10, :, :, :) - k02*arg(1:3, :, :, :) ! res(8:10) = -∇²A + k₀²A - ik₀∇×H - k₀²D
-   CALL nablaphi(tmp, arg(4, :, :, :))                             ! tmp = ∇Φ
-   res(8:10, :, :, :) = res(8:10, :, :, :) + ik0*tmp               ! res(8:10) = -∇²A + k₀²A - ik₀∇×H - k₀²D +ik₀∇Φ 
+   CALL laplasa(tmp, arg(8:10, :, :, :))                           ! tmp = laplacian(A)
+   res(8:10, :, :, :) = -tmp + k02*arg(8:10, :, :, :)              ! res(8:10) = -laplacian(A) + k0^2*A
+   CALL roth(tmp, arg(5:7, :, :, :))                               ! tmp = curl(H)
+   res(8:10, :, :, :) = res(8:10, :, :, :) - ik0*tmp               ! res(8:10) = -laplacian(A) + k0^2*A - ik0*curl(H)
+   res(8:10, :, :, :) = res(8:10, :, :, :) - k02*arg(1:3, :, :, :) ! res(8:10) = -laplacian(A) + k0^2*A - ik0*curl(H) - k0^2*D
+   CALL nablaphi(tmp, arg(4, :, :, :))                             ! tmp = grad(Phi)
+   res(8:10, :, :, :) = res(8:10, :, :, :) + ik0*tmp               ! res(8:10) = -laplacian(A) + k0^2*A - ik0*curl(H) - k0^2*D +ik*grad(Phi) 
 
    ! Correction of mass terms near boundaries.
    res(8, 1, :, :)     = res(8, 1, :, :)     - 0.5D0*k02*arg(8, 1, :, :)     + 0.5D0*k02*arg(1, 1, :, :)
@@ -1966,16 +1966,16 @@ SUBROUTINE mul_l_correction(res, tmp, arg, zeta)
    REAL(rk)    :: k02
 
    ! Assigning runtime variables.
-   ik0 = (0.0D0, 0.0D0)*pi/size0
+   ik0 = (0.0D0, 1.0D0)*pi/size0
    k02 = ABS(ik0)**2
 
    ! Initial assignment.
    res = (0.0D0, 0.0D0)
 
    ! Correction to governing equation for D field. (part 1)
-   CALL multen(res(5:7, :, :, :), zeta, arg(1:3, :, :, :)) ! res(5:7) = Z•D
-   CALL muldagten(tmp, zeta, res(5:7, :, :, :))            ! tmp = Z†•Z•D
-   res(1:3, :, :, :) = k02*(tmp - arg(1:3, :, :, :))       ! res(1:3) = k₀²(Z†•Z•D - D)
+   CALL multen(res(5:7, :, :, :), zeta, arg(1:3, :, :, :)) ! res(5:7) = Z*D
+   CALL muldagten(tmp, zeta, res(5:7, :, :, :))            ! tmp = dagger(Z)*Z*D
+   res(1:3, :, :, :) = k02*(tmp - arg(1:3, :, :, :))       ! res(1:3) = k0^2*(dagger(Z)*Z*D - D)
 
    ! Correction of mass terms near boundaries.
    res(1, 1, :, :)    = res(1, 1, :, :)    - 0.5D0*k02*(tmp(1, 1, :, :)    - arg(1, 1, :, :))
@@ -1986,22 +1986,27 @@ SUBROUTINE mul_l_correction(res, tmp, arg, zeta)
    res(3, :, :, nptz) = res(3, :, :, nptz) - 0.5D0*k02*(tmp(3, :, :, nptz) - arg(3, :, :, nptz))
 
    ! Correction to governing equation for D field. (part 2)
-   CALL muldagten(tmp, zeta, arg(8:10, :, :, :))                          ! tmp = Z†•A
-   res(1:3, :, :, :) = res(1:3, :, :, :) + k02*(arg(8:10, :, :, :) - tmp) ! res(1:3) = k₀²(Z†•Z•D - D) + k₀²(A - Z†•A)
+   CALL muldagten(tmp, zeta, arg(8:10, :, :, :))                          ! tmp = dagger(Z)*A
+   res(1:3, :, :, :) = res(1:3, :, :, :) + k02*(arg(8:10, :, :, :) - tmp) ! res(1:3) = k0^2*(dagger(Z)*Z*D - D) + k0^2*(A - dagger(Z)*A)
 
    ! Correction of mass terms near boundaries.
-   res(1, 1, :, :)    = res(1, 1, :, :)    + k02*(arg(8, 1, :, :)     - tmp(1, 1, :, :))
-   res(1, nptx, :, :) = res(1, nptx, :, :) + k02*(arg(8, nptx, :, :)  - tmp(1, nptx, :, :))
-   res(2, :, 1, :)    = res(2, :, 1, :)    + k02*(arg(9, :, 1, :)     - tmp(2, :, 1, :))
-   res(2, :, npty, :) = res(2, :, npty, :) + k02*(arg(9, :, npty, :)  - tmp(2, :, npty, :))
-   res(3, :, :, 1)    = res(3, :, :, 1)    + k02*(arg(10, :, :, 1)    - tmp(3, :, :, 1))
-   res(3, :, :, nptz) = res(3, :, :, nptz) + k02*(arg(10, :, :, nptz) - tmp(3, :, :, nptz))
+   res(1, 1, :, :)    = res(1, 1, :, :)    - 0.5D0*k02*(arg(8, 1, :, :)     - tmp(1, 1, :, :))
+   res(1, nptx, :, :) = res(1, nptx, :, :) - 0.5D0*k02*(arg(8, nptx, :, :)  - tmp(1, nptx, :, :))
+   res(2, :, 1, :)    = res(2, :, 1, :)    - 0.5D0*k02*(arg(9, :, 1, :)     - tmp(2, :, 1, :))
+   res(2, :, npty, :) = res(2, :, npty, :) - 0.5D0*k02*(arg(9, :, npty, :)  - tmp(2, :, npty, :))
+   res(3, :, :, 1)    = res(3, :, :, 1)    - 0.5D0*k02*(arg(10, :, :, 1)    - tmp(3, :, :, 1))
+   res(3, :, :, nptz) = res(3, :, :, nptz) - 0.5D0*k02*(arg(10, :, :, nptz) - tmp(3, :, :, nptz))
+
+   ! Correction to governing equation for D field. (part 2)
+   CALL nablaphi(res(5:7, :, :, :), arg(4, :, :, :))                     ! res(5:7) = grad(Phi)
+   CALL muldagten(tmp, zeta, res(5:7, :, :, :))                          ! tmp = dagger(Z)*grad(Phi)
+   res(1:3, :, :, :) = res(1:3, :, :, :) + ik0*(res(5:7, :, :, :) - tmp) ! res(1:3) = k0^2*(dagger(Z)*Z*D - D) + k0^2*(A - dagger(Z)*A) + ik0*(grad(Phi) - dagger(Z)*grad(Phi))
 
    ! Correction to governing equation for Phi field.
-   CALL multen(res(5:7, :, :, :), zeta, arg(1:3, :, :, :)) ! res(5:7) = Z•D
-   CALL divd(tmp(1, :, :, :), res(5:7, :, :, :))           ! tmp(1) = ∇•(Z•D)
-   CALL divd(tmp(2, :, :, :), arg(1:3, :, :, :))           ! tmp(2) = ∇•D
-   res(4, :, :, :) = ik0*(tmp(2) - tmp(1))                 ! res(4) = ik₀∇•D - ik₀∇•(Z•D)
+   CALL multen(res(5:7, :, :, :), zeta, arg(1:3, :, :, :))   ! res(5:7) = Z*D
+   CALL divd(tmp(1, :, :, :), res(5:7, :, :, :))             ! tmp(1) = div(Z*D)
+   CALL divd(tmp(2, :, :, :), arg(1:3, :, :, :))             ! tmp(2) = div(D)
+   res(4, :, :, :) = ik0*(tmp(2, :, :, :) - tmp(1, :, :, :)) ! res(4) = ik0*div(D) - ik0*div(Z*D)
 
    ! Correction to governing equation for H field.
    res(5:7, :, :, :) = (0.0D0, 0.0D0)
@@ -2011,12 +2016,12 @@ SUBROUTINE mul_l_correction(res, tmp, arg, zeta)
    res(8:10, :, :, :) = k02*(arg(1:3, :, :, :) - tmp) ! res(8:10) = k₀²(D - Z•D)
 
    ! Correction of mass terms near boundaries.
-   res(8, 1, :, :)     = k02*(arg(1, 1, :, :)    - tmp(1, 1, :, :))
-   res(8, nptx, :, :)  = k02*(arg(1, nptx, :, :) - tmp(1, nptx, :, :))
-   res(9, :, 1, :)     = k02*(arg(2, :, 1, :)    - tmp(2, :, 1, :))
-   res(9, :, npty, :)  = k02*(arg(2, :, npty, :) - tmp(2, :, npty, :))
-   res(10, :, :, 1)    = k02*(arg(3, :, :, 1)    - tmp(3, :, :, 1))
-   res(10, :, :, nptz) = k02*(arg(3, :, :, nptz) - tmp(3, :, :, nptz))
+   res(8, 1, :, :)     = res(8, 1, :, :)     - 0.5D0*k02*(arg(1, 1, :, :)    - tmp(1, 1, :, :))
+   res(8, nptx, :, :)  = res(8, nptx, :, :)  - 0.5D0*k02*(arg(1, nptx, :, :) - tmp(1, nptx, :, :))
+   res(9, :, 1, :)     = res(9, :, 1, :)     - 0.5D0*k02*(arg(2, :, 1, :)    - tmp(2, :, 1, :))
+   res(9, :, npty, :)  = res(9, :, npty, :)  - 0.5D0*k02*(arg(2, :, npty, :) - tmp(2, :, npty, :))
+   res(10, :, :, 1)    = res(10, :, :, 1)    - 0.5D0*k02*(arg(3, :, :, 1)    - tmp(3, :, :, 1))
+   res(10, :, :, nptz) = res(10, :, :, nptz) - 0.5D0*k02*(arg(3, :, :, nptz) - tmp(3, :, :, nptz))
 
 END SUBROUTINE mul_l_correction
 
