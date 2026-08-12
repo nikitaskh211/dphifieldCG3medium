@@ -1,14 +1,36 @@
 ! This module contains the definition of plasma.
-MODULE plasma
+MODULE const_plasma
 
    USE numberformat
 
    IMPLICIT NONE
 
-!  COMPLEX(rk) :: E0 = 1.0D0
-   COMPLEX(rk) :: E0 = 1.0D0 + (0.0D0, 1.0D0)
+   COMPLEX(rk) :: E0
 
-END MODULE plasma
+END MODULE const_plasma
+
+! TL.2. A subroutine that reads plasma's parameters from a file.
+SUBROUTINE const_plasma_in
+
+   USE numberformat
+   USE const_plasma
+
+   IMPLICIT NONE
+
+   REAL(rk) :: re_E0, im_E0
+
+   OPEN (14, FILE='plasma_in.dat', STATUS='old')
+   OPEN (15, FILE='plasma_out.dat')
+
+   READ (14, *) re_E0, im_E0
+   WRITE (15, *) re_E0, im_E0
+
+   E0 = 1.0D0 + re_E0 + (0.0D0, 1.0D0)*im_E0
+
+   CLOSE (14)
+   CLOSE (15)
+
+END SUBROUTINE const_plasma_in
 
 ! This subroutine setts the zeta array.
 SUBROUTINE set_zeta(zeta_arr)
@@ -154,7 +176,7 @@ PROGRAM test_ll1_operator
    ! Testcase numbers.
    INTEGER            :: testcase
    INTEGER, PARAMETER :: testcases = 60 ! 10 components of the vector: Dx,Dy,Dz,Phi,Hx,Hy,Hz,Ax,Ay,Az
-                                          ! x 6 spatial profiles (x, y, z, i*x, i*y, i*z) = 60 unique test cases
+                                        ! x 6 spatial profiles (x, y, z, i*x, i*y, i*z) = 60 unique test cases
 
    ! Wavenumber of free space.
    REAL(rk)    :: k02
@@ -162,6 +184,7 @@ PROGRAM test_ll1_operator
 
    ! Reading configuration.
    CALL datain
+   CALL const_plasma_in
 
    ! Allocating memory.
    ALLOCATE(zeta(3, 3, nptx, npty, nptz))

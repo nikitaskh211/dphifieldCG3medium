@@ -10,9 +10,32 @@ MODULE const_plasma
    USE numberformat
 
    IMPLICIT NONE
-   COMPLEX(rk) :: E0 = 1.0_rk + (1.0_rk, 2.0_rk)/3.0d0
+   COMPLEX(rk) :: E0
 
 END MODULE const_plasma
+
+! TL.2. A subroutine that reads plasma's parameters from a file.
+SUBROUTINE const_plasma_in
+
+   USE numberformat
+   USE const_plasma
+
+   IMPLICIT NONE
+
+   REAL(rk) :: re_E0, im_E0
+
+   OPEN (14, FILE='plasma_in.dat', STATUS='old')
+   OPEN (15, FILE='plasma_out.dat')
+
+   READ (14, *) re_E0, im_E0
+   WRITE (15, *) re_E0, im_E0
+
+   E0 = 1.0D0 + re_E0 + (0.0D0, 1.0D0)*im_E0
+
+   CLOSE (14)
+   CLOSE (15)
+
+END SUBROUTINE const_plasma_in
 
 SUBROUTINE setzeta(zeta)
 
@@ -172,6 +195,7 @@ PROGRAM test_lc_operator
    ! Reading configuration. !
    !========================!
    CALL datain
+   CALL const_plasma_in
 
    !====================!
    ! Allocating memory. !
